@@ -54,13 +54,17 @@ namespace SQLiteMapper
             foreach (var row in valueList) {
                 foreach (var (key, value) in row) {
                     if (!typeDict.ContainsKey(key) || typeDict[key] is null) {
-                        // TODO: finish early somehow
                         typeDict[key] = GetSqLiteType(value);
                     }
                 }
+
+                if (typeDict.Values.All(v => v is not null)) {
+                    return typeDict;
+                }
             }
 
-            return typeDict;
+            var errorString = $"Could not guess the types of following columns: [{String.Join(", ", typeDict.Where(pair => pair.Value is null).Select(p => p.Key))}], probably because their values are all null. You need to declase types of these columns explicitly (NOT IMPLEMENTED)";
+            throw new ArgumentNullException(errorString);
         }
 
         /// <summary>
@@ -91,7 +95,7 @@ namespace SQLiteMapper
             if (value is null) return null;
             return value switch {
                 bool l => "INTEGER",
-                long l => "INTEGER", // gets sent to double for some reason, which works
+                long l => "INTEGER",
                 double d => "REAL",
                 DateTime dt => "TEXT",
                 string str => "TEXT",

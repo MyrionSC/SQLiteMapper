@@ -1,3 +1,4 @@
+using System;
 using business_layer_test;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -15,6 +16,14 @@ namespace SQLiteMapperTests
             var result = SqLiteMapper.GenerateTableAndInsertStatements(inputParsed);
             var expected = System.IO.File.ReadAllText(@"testfiles/users_export_output.sql");
             TestHelper.AssertEqualNoWhitepace(expected, result);
+        }
+        
+        [Test]
+        public void ThrowExceptionWhenAnyNull()
+        {
+            var inputStr = System.IO.File.ReadAllText(@"testfiles/users_input_null_field.json"); 
+            var inputParsed = JsonConvert.DeserializeObject<SqLiteMapperInput>(inputStr);
+            Assert.Throws<ArgumentNullException>(() => SqLiteMapper.GenerateTableAndInsertStatements(inputParsed));
         }
     }
 }
