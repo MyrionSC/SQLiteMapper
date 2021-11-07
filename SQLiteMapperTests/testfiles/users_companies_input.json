@@ -1,0 +1,15 @@
+{
+  "data": {
+    "users": [
+      {"name": "Martin", "age": 42, "worksFor": 1},
+      {"name": "Jørgen", "age": 2, "worksFor": 1},
+      {"name": "Ali", "age": 999, "worksFor": 2},
+      {"name": "Muhammed", "age": null, "worksFor": 2}
+    ],
+    "companies": [
+      {"companyId": 1, "companyName": "Commentor", "Address": "Visionsvej 21"},
+      {"companyId": 2, "companyName": "NetCompany", "Address": "Havnen"}
+    ]
+  },
+  "query": "select users.*, companies.companyName from users left join companies on users.worksFor = companies.companyId"
+}

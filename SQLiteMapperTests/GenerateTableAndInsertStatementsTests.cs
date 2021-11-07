@@ -9,12 +9,22 @@ namespace SQLiteMapperTests
     public class GenerateTableAndInsertStatementsTests
     {
         [Test]
-        public void CreateSingleTable()
+        public void GenerateUsers()
         {
             var inputStr = System.IO.File.ReadAllText(@"testfiles/users_input.json"); 
             var inputParsed = JsonConvert.DeserializeObject<SqLiteMapperInput>(inputStr);
             var result = SqLiteMapper.GenerateTableAndInsertStatements(inputParsed);
-            var expected = System.IO.File.ReadAllText(@"testfiles/users_export_output.sql");
+            var expected = System.IO.File.ReadAllText(@"testfiles/users_output.sql");
+            TestHelper.AssertEqualNoWhitepace(expected, result);
+        }
+        [Test]
+        
+        public void GenerateUsersCompanies()
+        {
+            var inputStr = System.IO.File.ReadAllText(@"testfiles/users_companies_input.json"); 
+            var inputParsed = JsonConvert.DeserializeObject<SqLiteMapperInput>(inputStr);
+            var result = SqLiteMapper.GenerateTableAndInsertStatements(inputParsed);
+            var expected = System.IO.File.ReadAllText(@"testfiles/users_companies_output.sql");
             TestHelper.AssertEqualNoWhitepace(expected, result);
         }
         
