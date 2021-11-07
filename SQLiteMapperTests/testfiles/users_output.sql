@@ -6,6 +6,6 @@ CREATE TABLE users
 
 INSERT INTO users (name, age)
 VALUES ('Martin', 42),
-       ('Jørgen', 2),
+       ('Casper', 2),
        ('Ali', 999),
        ('Muhammed', null);

@@ -18,7 +18,7 @@ VALUES (1, 'Commentor', 'Visionsvej 21'),
 
 INSERT INTO users (name, age, worksFor)
 VALUES ('Martin', 42, 1),
-       ('Jørgen', 2, 1),
+       ('Casper', 2, 1),
        ('Ali', 999, 2),
        ('Muhammed', null, 2);
 

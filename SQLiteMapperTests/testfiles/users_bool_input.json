@@ -3,9 +3,9 @@
     "users": [
       {"name": "Martin", "age": 42, "isAlive": true},
       {"name": "Casper", "age": 2, "isAlive": true},
-      {"name": "Ali", "age": 999, "isAlive": true},
+      {"name": "Ali", "age": 999, "isAlive": false},
       {"name": "Muhammed", "age": null, "isAlive": false}
     ]
   },
-  "query": "select * from users where name = 'Martin'"
+  "query": "select * from users where isAlive = 1"
 }
