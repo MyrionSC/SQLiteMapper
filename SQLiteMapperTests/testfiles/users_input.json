@@ -1,0 +1,10 @@
+{
+  "data": {
+    "users": [
+      {"name": "Martin", "age": 42},
+      {"name": "Jørgen", "age": 2},
+      {"name": "Ali", "age": 999},
+      {"name": "Muhammed", "age": null}
+    ]
+  }
+}
