@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
+using Dapper;
 
 namespace SQLiteMapper
 {
@@ -9,24 +10,20 @@ namespace SQLiteMapper
         // Remember to use transaction
         public static string Export(string input)
         {
-            
-            
-            using (var connection = new SqliteConnection("Data Source=C:\\Users\\Marph\\source\\SQLiteMapper\\SQLiteMapper\\testdb")) {
-                connection.Open();
-                
-                
-                
-                using (var transaction = connection.BeginTransaction()) {
-                    
-                }
-                
-                
-                // read json into db
-                var json = JsonConvert.DeserializeObject(input);
-                
-                
+            var parsedInput = JsonConvert.DeserializeObject<SqLiteMapperInput>(input);
 
-                Console.WriteLine(json);
+
+            using (var connection =
+                new SqliteConnection("Data Source=C:\\Users\\Marph\\source\\SQLiteMapper\\SQLiteMapper\\testdb")) {
+                connection.Open();
+
+                using (var transaction = connection.BeginTransaction()) {
+                }
+
+
+                // read json into db
+                // var json = JsonConvert.DeserializeObject(input);
+                // Console.WriteLine(json);
 
                 // generate export statement
 
@@ -51,26 +48,32 @@ namespace SQLiteMapper
 
             return "Should not happen";
         }
+
+        // new SqliteConnection("Data Source=C:\\Users\\Marph\\source\\SQLiteMapper\\SQLiteMapper\\testdb")) {
         public static string Execute(string input)
         {
-            using (var connection = new SqliteConnection("Data Source=C:\\Users\\Marph\\source\\SQLiteMapper\\SQLiteMapper\\testdb")) {
+            using (var connection = new SqliteConnection("Data Source=:memory:")) {
                 connection.Open();
-                var command = connection.CreateCommand();
-                command.CommandText =
+
+                var insertCommand = connection.CreateCommand();
+                insertCommand.CommandText =
                     @"
-                        SELECT first_name
-                        FROM contacts
-                        WHERE contact_id = $id
+                    CREATE TABLE users
+                    (
+                        name TEXT,
+                        age  INTEGER
+                    );
+                    INSERT INTO users (name, age)
+                    VALUES ('Martin', 42),
+                           ('Jørgen', 2),
+                           ('Ali', 999),
+                           ('Jørgen', null);
                     ";
-                command.Parameters.AddWithValue("$id", "123");
+                insertCommand.ExecuteNonQuery();
 
-                using (var reader = command.ExecuteReader()) {
-                    while (reader.Read()) {
-                        var name = reader.GetString(0);
-
-                        return $"{name}";
-                    }
-                }
+                var la = connection.Query("select name from users");
+                var o = JsonConvert.SerializeObject(la);
+                Console.WriteLine(o);
             }
 
             return "Should not happen";
@@ -78,8 +81,9 @@ namespace SQLiteMapper
 
         public static void Init()
         {
-            using (var connection = new SqliteConnection("Data Source=C:\\Users\\Marph\\source\\SQLiteMapper\\SQLiteMapper\\testdb")) {
-            // using (var connection = new SqliteConnection("Data Source=:memory:")) {
+            using (var connection =
+                new SqliteConnection("Data Source=C:\\Users\\Marph\\source\\SQLiteMapper\\SQLiteMapper\\testdb")) {
+                // using (var connection = new SqliteConnection("Data Source=:memory:")) {
                 connection.Open();
                 Console.WriteLine(connection.DataSource);
                 using (var transaction = connection.BeginTransaction()) {

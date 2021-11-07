@@ -9,7 +9,7 @@ namespace SQLiteMapperTests
         public void Test1()
         {
             var res = SqLiteMapper.Execute("");
-            Assert.AreEqual("martin", res);
+            Assert.AreEqual("Martin", res);
         }
     }
 }
