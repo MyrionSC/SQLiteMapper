@@ -6,5 +6,6 @@
       {"name": "Ali", "age": 999},
       {"name": "Muhammed", "age": null}
     ]
-  }
+  },
+  "query": "select * from users where name = 'Martin'"
 }

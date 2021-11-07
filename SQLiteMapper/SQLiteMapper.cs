@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -7,39 +6,37 @@ using System.Text;
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
 using Dapper;
-using Newtonsoft.Json.Linq;
 
 namespace SQLiteMapper
 {
     public static class SqLiteMapper
     {
-        public static string Export(string input)
+        public static string GenerateTableAndInsertStatements(SqLiteMapperInput input)
         {
-            var parsedInput = JsonConvert.DeserializeObject<SqLiteMapperInput>(input);
-            var createTablesStatement = GenerateCreateTablesStatement(parsedInput);
-            var createInsertsStatement = GenerateCreateInsertsStatement(parsedInput);
+            var createTablesStatement = GenerateCreateTablesStatement(input);
+            var createInsertsStatement = GenerateCreateInsertsStatement(input);
             return createTablesStatement + createInsertsStatement;
         }
 
-        private static string GenerateCreateInsertsStatement(SqLiteMapperInput parsedInput)
+        private static string GenerateCreateInsertsStatement(SqLiteMapperInput input)
         {
             var builder = new StringBuilder();
-            var sortedDict = parsedInput.data.ToImmutableSortedDictionary(StringComparer.InvariantCultureIgnoreCase);
+            var sortedDict = input.data.ToImmutableSortedDictionary(StringComparer.InvariantCultureIgnoreCase);
             foreach (var (tableName, valueList) in sortedDict) {
                 var typeDict = GetSqLiteTypeDict(valueList);
                 builder.Append($"INSERT INTO {tableName} ({String.Join(", ", typeDict.Keys)})\nVALUES ");
-                builder.AppendJoin(",\n\t", valueList.Select(row => $"({String.Join(", ", row.Values.Select(ToSqliteValue))})"));
+                builder.AppendJoin(",\n\t",
+                    valueList.Select(row => $"({String.Join(", ", row.Values.Select(ToSqliteValue))})"));
                 builder.Append(";\n\n");
             }
 
             return builder.ToString();
         }
 
-
-        private static string GenerateCreateTablesStatement(SqLiteMapperInput parsedInput)
+        private static string GenerateCreateTablesStatement(SqLiteMapperInput input)
         {
             var builder = new StringBuilder();
-            var sortedDict = parsedInput.data.ToImmutableSortedDictionary(StringComparer.InvariantCultureIgnoreCase);
+            var sortedDict = input.data.ToImmutableSortedDictionary(StringComparer.InvariantCultureIgnoreCase);
             foreach (var (tableName, valueList) in sortedDict) {
                 builder.Append($"CREATE TABLE {tableName}\n(\n\t");
                 var typeDict = GetSqLiteTypeDict(valueList);
@@ -49,7 +46,7 @@ namespace SQLiteMapper
 
             return builder.ToString();
         }
-        
+
 
         private static Dictionary<string, string> GetSqLiteTypeDict(IEnumerable<Dictionary<string, object>> valueList)
         {
@@ -65,7 +62,7 @@ namespace SQLiteMapper
 
             return typeDict;
         }
-        
+
         /// <summary>
         /// Tries to map a value to a sqlite value
         /// </summary>
@@ -93,9 +90,6 @@ namespace SQLiteMapper
         {
             if (value is null) return null;
             return value switch {
-                // JObject jObject => GetSqLiteType(jObject),
-                // JArray jArray => GetSqLiteType(jArray),
-                // JValue jValue => GetSqLiteType(jValue),
                 bool l => "INTEGER",
                 long l => "INTEGER", // gets sent to double for some reason, which works
                 double d => "REAL",
@@ -105,68 +99,23 @@ namespace SQLiteMapper
             };
         }
 
-        // new SqliteConnection("Data Source=C:\\Users\\Marph\\source\\SQLiteMapper\\SQLiteMapper\\testdb")) {
-        public static string Execute(string input)
+        public static string ExecuteQuery(SqLiteMapperInput input)
         {
+            var statements = GenerateTableAndInsertStatements(input);
             using (var connection = new SqliteConnection("Data Source=:memory:")) {
                 connection.Open();
 
-                // insert import statement
+                // we wrap in transaction because the internet tells me it is faster. Otherwise each stmt gets transaction each. TODO: test performance.
                 using (var transaction = connection.BeginTransaction()) {
-                }
-
-                var insertCommand = connection.CreateCommand();
-                insertCommand.CommandText =
-                    @"
-                    CREATE TABLE users
-                    (
-                        name TEXT,
-                        age  INTEGER
-                    );
-                    INSERT INTO users (name, age)
-                    VALUES ('Martin', 42),
-                           ('Jørgen', 2),
-                           ('Ali', 999),
-                           ('Jørgen', null);
-                    ";
-                insertCommand.ExecuteNonQuery();
-
-                var la = connection.Query("select * from users");
-                var o = JsonConvert.SerializeObject(la);
-                Console.WriteLine(o);
-            }
-
-            return "Should not happen";
-        }
-
-        public static void Init()
-        {
-            using (var connection =
-                new SqliteConnection("Data Source=C:\\Users\\Marph\\source\\SQLiteMapper\\SQLiteMapper\\testdb")) {
-                // using (var connection = new SqliteConnection("Data Source=:memory:")) {
-                connection.Open();
-                Console.WriteLine(connection.DataSource);
-                using (var transaction = connection.BeginTransaction()) {
-                    var command = connection.CreateCommand();
-                    command.CommandText =
-                        @"
-                            INSERT INTO data
-                            VALUES ($value)
-                        ";
-
-                    var parameter = command.CreateParameter();
-                    parameter.ParameterName = "$value";
-                    command.Parameters.Add(parameter);
-
-                    // Insert a lot of data
-                    var random = new Random();
-                    for (var i = 0; i < 150_000; i++) {
-                        parameter.Value = random.Next();
-                        command.ExecuteNonQuery();
-                    }
-
+                    var insertCommand = connection.CreateCommand();
+                    insertCommand.CommandText = statements;
+                    insertCommand.ExecuteNonQuery();
                     transaction.Commit();
                 }
+
+                // By the power of Dapper, execute the query!
+                var la = connection.Query(input.query);
+                return JsonConvert.SerializeObject(la);
             }
         }
     }

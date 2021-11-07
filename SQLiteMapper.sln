@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteMapper", "SQLiteMappe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLiteMapperTests", "SQLiteMapperTests\SQLiteMapperTests.csproj", "{9C08E001-F16A-42D1-9202-DF19A7E54B5A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionsIsolated", "FunctionsIsolated\FunctionsIsolated.csproj", "{67724416-255A-484F-996D-C42041B672E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +46,17 @@ Global
 		{9C08E001-F16A-42D1-9202-DF19A7E54B5A}.Release|x64.Build.0 = Release|Any CPU
 		{9C08E001-F16A-42D1-9202-DF19A7E54B5A}.Release|x86.ActiveCfg = Release|Any CPU
 		{9C08E001-F16A-42D1-9202-DF19A7E54B5A}.Release|x86.Build.0 = Release|Any CPU
+		{67724416-255A-484F-996D-C42041B672E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67724416-255A-484F-996D-C42041B672E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67724416-255A-484F-996D-C42041B672E6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{67724416-255A-484F-996D-C42041B672E6}.Debug|x64.Build.0 = Debug|Any CPU
+		{67724416-255A-484F-996D-C42041B672E6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{67724416-255A-484F-996D-C42041B672E6}.Debug|x86.Build.0 = Debug|Any CPU
+		{67724416-255A-484F-996D-C42041B672E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67724416-255A-484F-996D-C42041B672E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67724416-255A-484F-996D-C42041B672E6}.Release|x64.ActiveCfg = Release|Any CPU
+		{67724416-255A-484F-996D-C42041B672E6}.Release|x64.Build.0 = Release|Any CPU
+		{67724416-255A-484F-996D-C42041B672E6}.Release|x86.ActiveCfg = Release|Any CPU
+		{67724416-255A-484F-996D-C42041B672E6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
