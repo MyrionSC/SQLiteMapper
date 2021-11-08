@@ -5,7 +5,7 @@ using SQLiteMapper;
 
 namespace SQLiteMapperTests
 {
-    public class ExecuteTests
+    public class QueryTests
     {
         [Test]
         public void GetUser()
