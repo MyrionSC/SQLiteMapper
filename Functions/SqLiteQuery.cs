@@ -6,7 +6,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Newtonsoft.Json;
 using SQLiteMapper;
 
-namespace FunctionsIsolated
+namespace Functions
 {
     public static class SqLiteQuery
     {
