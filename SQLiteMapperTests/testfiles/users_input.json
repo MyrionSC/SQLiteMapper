@@ -7,5 +7,5 @@
       {"name": "Muhammed", "age": null, "isAlive": false}
     ]
   },
-  "query": "select * from users where name = 'Martin'"
+  "query": "select name, age from users where name = 'Martin'"
 }
