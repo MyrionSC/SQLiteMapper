@@ -18,6 +18,16 @@ namespace SQLiteMapperTests
         }
         
         [Test]
+        public void GetUserNested()
+        {
+            var inputStr = System.IO.File.ReadAllText(@"testfiles/users_nested_input.json");
+            var inputParsed = JsonConvert.DeserializeObject<SqLiteMapperInput>(inputStr);
+            var result = SqLiteMapper.ExecuteQuery(inputParsed);
+            var expected = @"[{""name"": ""Martin"", ""age"": 42, ""address_city"": ""Aalborg"", ""address_street"": ""Søndergade 58 2th""}]";
+            TestHelper.AssertEqualNoWhitepace(expected, result);
+        }
+        
+        [Test]
         public void GetUserBool()
         {
             var inputStr = System.IO.File.ReadAllText(@"testfiles/users_bool_input.json");

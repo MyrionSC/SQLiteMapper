@@ -1,0 +1,9 @@
+{
+  "data": {
+    "users": [
+      {"name": "Martin", "age": 42, "isAlive": true, "address": {"city": "Aalborg", "street": "Søndergade 58 2th"}},
+      {"name": "Casper", "age": 2, "isAlive": true, "address": {"city": "Aarhus", "street": "Gadenavn 42"}}
+    ]
+  },
+  "query": "select name, age, address_city, address_street from users where name = 'Martin'"
+}
