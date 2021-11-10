@@ -17,15 +17,6 @@ namespace SQLiteMapperTests
             var expected = System.IO.File.ReadAllText(@"testfiles/users_output.sql");
             TestHelper.AssertEqualNoWhitepace(expected, result);
         }
-        [Test]
-        public void GenerateUsersNested()
-        {
-            var inputStr = System.IO.File.ReadAllText(@"testfiles/users_nested_input.json"); 
-            var inputParsed = JsonConvert.DeserializeObject<SqLiteMapperInput>(inputStr);
-            var result = SqLiteMapper.GenerateTableAndInsertStatements(inputParsed);
-            var expected = System.IO.File.ReadAllText(@"testfiles/users_nested_output.sql");
-            TestHelper.AssertEqualNoWhitepace(expected, result);
-        }
         
         [Test]
         public void GenerateUsersCompanies()

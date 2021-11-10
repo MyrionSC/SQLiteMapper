@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
 using Dapper;
+using SQLiteMapper.Exceptions;
 
 namespace SQLiteMapper
 {
@@ -13,24 +14,40 @@ namespace SQLiteMapper
     {
         public static string GenerateTableAndInsertStatements(SqLiteMapperInput input)
         {
+            ValidateSchemaIfPresent(input);
+            
+            // var sortedDict = input.data.ToImmutableSortedDictionary(StringComparer.InvariantCultureIgnoreCase);
+            // var createStatementsBuilder = new StringBuilder();
+            // var typeDictList = sortedDict.Values.Select(GetSqLiteTypeDict);
+            // foreach (Dictionary<string,string> dictionary in typeDictList) {
+            //     createStatementsBuilder.Append($"CREATE TABLE {tableName}\n(\n\t");
+            //     var typeDict = GetSqLiteTypeDict(valueList);
+            //     createStatementsBuilder.AppendJoin(",\n\t", typeDict.Select(pair => $"{pair.Key} {pair.Value}"));
+            //     createStatementsBuilder.Append("\n);\n");
+            // }
+            
+            
+            
+            
             var createTablesStatement = GenerateCreateTablesStatement(input);
             var createInsertsStatement = GenerateCreateInsertsStatement(input);
             return createTablesStatement + createInsertsStatement;
         }
 
-        private static string GenerateCreateInsertsStatement(SqLiteMapperInput input)
+        private static void ValidateSchemaIfPresent(SqLiteMapperInput input)
         {
-            var builder = new StringBuilder();
-            var sortedDict = input.data.ToImmutableSortedDictionary(StringComparer.InvariantCultureIgnoreCase);
-            foreach (var (tableName, valueList) in sortedDict) {
-                var typeDict = GetSqLiteTypeDict(valueList);
-                builder.Append($"INSERT INTO {tableName} ({String.Join(", ", typeDict.Keys)})\nVALUES ");
-                builder.AppendJoin(",\n\t",
-                    valueList.Select(row => $"({String.Join(", ", row.Values.Select(ToSqliteValue))})"));
-                builder.Append(";\n\n");
+            if (input.schemas is null) return;
+            
+            // validate that schemas values are valid sqlite types
+            var validTypeList = new[] { "TEXT", "INTEGER", "REAL", "BLOB" };
+            foreach (var schema in input.schemas) {
+                if (schema.Value is null) throw new ArgumentNullException(nameof(schema));
+                foreach (var schemaKeyValue in schema.Value) {
+                    if (!validTypeList.Contains(schemaKeyValue.Value)) {
+                        throw new SchemaBadValueException($"declared value in schema keyvalue pair ({schemaKeyValue.Key}, {schemaKeyValue.Value}) is not valid sqlite type (which are: {JsonConvert.SerializeObject(validTypeList)})");
+                    }
+                }
             }
-
-            return builder.ToString();
         }
 
         private static string GenerateCreateTablesStatement(SqLiteMapperInput input)
@@ -47,6 +64,20 @@ namespace SQLiteMapper
             return builder.ToString();
         }
 
+        private static string GenerateCreateInsertsStatement(SqLiteMapperInput input)
+        {
+            var builder = new StringBuilder();
+            var sortedDict = input.data.ToImmutableSortedDictionary(StringComparer.InvariantCultureIgnoreCase);
+            foreach (var (tableName, valueList) in sortedDict) {
+                var typeDict = GetSqLiteTypeDict(valueList);
+                builder.Append($"INSERT INTO {tableName} ({String.Join(", ", typeDict.Keys)})\nVALUES ");
+                builder.AppendJoin(",\n\t",
+                    valueList.Select(row => $"({String.Join(", ", row.Values.Select(ToSqliteValue))})"));
+                builder.Append(";\n\n");
+            }
+
+            return builder.ToString();
+        }
 
         private static Dictionary<string, string> GetSqLiteTypeDict(IEnumerable<Dictionary<string, object>> valueList)
         {

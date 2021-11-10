@@ -1,6 +1,6 @@
 {
   "data": {},
-  "schema": {
+  "schemas": {
     "users": {
       "name": "TEXT",
       "age": "INTEGER",

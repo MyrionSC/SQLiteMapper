@@ -4,7 +4,7 @@
       {"name": "Martin", "age": null, "isAlive": true}
     ]
   },
-  "schema": {
+  "schemas": {
     "users": {
       "name": "ABADVALUE"
     }

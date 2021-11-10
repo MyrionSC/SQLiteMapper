@@ -5,7 +5,7 @@
       {"name": "Casper", "age": null, "isAlive": null}
     ]
   },
-  "schema": {
+  "schemas": {
     "users": {
       "name": "TEXT",
       "age": "INTEGER",
