@@ -48,6 +48,13 @@ namespace SQLiteMapper
                     }
                 }
             }
+            
+            // validate that schema keys correspond to data
+            foreach (var key in input.schemas.Keys) {
+                if (!input.data.ContainsKey(key)) {
+                    throw new SchemaNoCorrespondingDataException($"schema key {key} does not have a corresponding data key");
+                }
+            }
         }
 
         private static string GenerateCreateTablesStatement(SqLiteMapperInput input)

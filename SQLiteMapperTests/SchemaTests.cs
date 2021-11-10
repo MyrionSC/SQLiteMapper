@@ -20,7 +20,7 @@ namespace SQLiteMapperTests
         [Test]
         public void BadSchema_NoCorrespondingData()
         {
-            var inputStr = System.IO.File.ReadAllText(@"testfiles/schema_bad_value_input.json"); 
+            var inputStr = System.IO.File.ReadAllText(@"testfiles/schema_no_corresponding_data_input.json"); 
             var inputParsed = JsonConvert.DeserializeObject<SqLiteMapperInput>(inputStr);
             Assert.Throws<SchemaNoCorrespondingDataException>(() => SqLiteMapper.GenerateTableAndInsertStatements(inputParsed));
         }
