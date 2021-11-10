@@ -1,0 +1,13 @@
+{
+  "data": {
+    "users": [
+      {"name": "Martin", "age": null, "isAlive": true}
+    ]
+  },
+  "schema": {
+    "users": {
+      "name": "ABADVALUE"
+    }
+  },
+  "query": "select name, age from users where name = 'Martin'"
+}

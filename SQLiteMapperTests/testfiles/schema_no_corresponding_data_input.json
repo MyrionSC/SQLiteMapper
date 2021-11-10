@@ -1,0 +1,11 @@
+{
+  "data": {},
+  "schema": {
+    "users": {
+      "name": "TEXT",
+      "age": "INTEGER",
+      "isAlive": "INTEGER"
+    }
+  },
+  "query": "select name, age from users where name = 'Martin'"
+}
