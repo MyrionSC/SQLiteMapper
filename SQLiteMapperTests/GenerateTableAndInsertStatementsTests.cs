@@ -33,7 +33,9 @@ namespace SQLiteMapperTests
         {
             var inputStr = System.IO.File.ReadAllText(@"testfiles/users_input_null_field.json"); 
             var inputParsed = JsonConvert.DeserializeObject<SqLiteMapperInput>(inputStr);
-            Assert.Throws<ArgumentNullException>(() => SqLiteMapper.GenerateTableAndInsertStatements(inputParsed));
+            var result = SqLiteMapper.GenerateTableAndInsertStatements(inputParsed);
+            var expected = System.IO.File.ReadAllText(@"testfiles/users_input_null_field.sql");
+            TestHelper.AssertEqualNoWhitepace(expected, result);
         }
     }
 }

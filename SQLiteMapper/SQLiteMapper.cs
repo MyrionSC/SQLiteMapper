@@ -62,8 +62,10 @@ namespace SQLiteMapper
             var builder = new StringBuilder();
             var sortedDict = input.data.ToImmutableSortedDictionary(StringComparer.InvariantCultureIgnoreCase);
             foreach (var (tableName, valueList) in sortedDict) {
-                builder.Append($"CREATE TABLE {tableName}\n(\n\t");
+                // var schema = input.schemas.Where(s => s.Key == tableName);
                 var typeDict = GetSqLiteTypeDict(valueList);
+                
+                builder.Append($"CREATE TABLE {tableName}\n(\n\t");
                 builder.AppendJoin(",\n\t", typeDict.Select(pair => $"{pair.Key} {pair.Value}"));
                 builder.Append("\n);\n");
             }
@@ -86,9 +88,9 @@ namespace SQLiteMapper
             return builder.ToString();
         }
 
-        private static Dictionary<string, string> GetSqLiteTypeDict(IEnumerable<Dictionary<string, object>> valueList)
+        private static Dictionary<string, string?> GetSqLiteTypeDict(IEnumerable<Dictionary<string, object>> valueList)
         {
-            var typeDict = new Dictionary<string, string>();
+            var typeDict = new Dictionary<string, string?>();
             foreach (var row in valueList) {
                 foreach (var (key, value) in row) {
                     if (!typeDict.ContainsKey(key) || typeDict[key] is null) {
@@ -101,8 +103,12 @@ namespace SQLiteMapper
                 }
             }
 
-            var errorString = $"Could not guess the types of following columns: [{String.Join(", ", typeDict.Where(pair => pair.Value is null).Select(p => p.Key))}], probably because their values are all null. You need to declase types of these columns explicitly (NOT IMPLEMENTED)";
-            throw new ArgumentNullException(errorString);
+            // set all remaining nulls to type "TEXT"
+            foreach (var key in typeDict.Keys) {
+                typeDict[key] = typeDict[key] is null ? "TEXT" : typeDict[key];
+            }
+
+            return typeDict;
         }
 
         /// <summary>
@@ -110,7 +116,7 @@ namespace SQLiteMapper
         /// </summary>
         /// <param name="value"></param>
         /// <returns>sqlite value</returns>
-        private static object ToSqliteValue(object value)
+        private static object ToSqliteValue(object? value)
         {
             if (value is null) return "null";
             return value switch {
