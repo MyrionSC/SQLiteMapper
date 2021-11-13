@@ -16,22 +16,24 @@ namespace SQLiteMapper
         {
             ValidateSchemaIfPresent(input);
             
-            // var sortedDict = input.data.ToImmutableSortedDictionary(StringComparer.InvariantCultureIgnoreCase);
-            // var createStatementsBuilder = new StringBuilder();
-            // var typeDictList = sortedDict.Values.Select(GetSqLiteTypeDict);
-            // foreach (Dictionary<string,string> dictionary in typeDictList) {
-            //     createStatementsBuilder.Append($"CREATE TABLE {tableName}\n(\n\t");
-            //     var typeDict = GetSqLiteTypeDict(valueList);
-            //     createStatementsBuilder.AppendJoin(",\n\t", typeDict.Select(pair => $"{pair.Key} {pair.Value}"));
-            //     createStatementsBuilder.Append("\n);\n");
-            // }
+            var tableBuilder = new StringBuilder();
+            var insertBuilder = new StringBuilder();
+            var sortedDict = input.data.ToImmutableSortedDictionary(StringComparer.InvariantCultureIgnoreCase);
             
+            foreach (var (tableName, valueList) in sortedDict) {
+                var typeDict = GetSqLiteTypeDict(valueList);
+                
+                tableBuilder.Append($"CREATE TABLE {tableName}\n(\n\t");
+                tableBuilder.AppendJoin(",\n\t", typeDict.Select(pair => $"{pair.Key} {pair.Value}"));
+                tableBuilder.Append("\n);\n");
+                
+                insertBuilder.Append($"INSERT INTO {tableName} ({String.Join(", ", typeDict.Keys)})\nVALUES ");
+                insertBuilder.AppendJoin(",\n\t",
+                    valueList.Select(row => $"({String.Join(", ", row.Values.Select(ToSqliteValue))})"));
+                insertBuilder.Append(";\n\n");
+            }
             
-            
-            
-            var createTablesStatement = GenerateCreateTablesStatement(input);
-            var createInsertsStatement = GenerateCreateInsertsStatement(input);
-            return createTablesStatement + createInsertsStatement;
+            return tableBuilder + insertBuilder.ToString();
         }
 
         private static void ValidateSchemaIfPresent(SqLiteMapperInput input)
@@ -55,37 +57,6 @@ namespace SQLiteMapper
                     throw new SchemaNoCorrespondingDataException($"schema key {key} does not have a corresponding data key");
                 }
             }
-        }
-
-        private static string GenerateCreateTablesStatement(SqLiteMapperInput input)
-        {
-            var builder = new StringBuilder();
-            var sortedDict = input.data.ToImmutableSortedDictionary(StringComparer.InvariantCultureIgnoreCase);
-            foreach (var (tableName, valueList) in sortedDict) {
-                // var schema = input.schemas.Where(s => s.Key == tableName);
-                var typeDict = GetSqLiteTypeDict(valueList);
-                
-                builder.Append($"CREATE TABLE {tableName}\n(\n\t");
-                builder.AppendJoin(",\n\t", typeDict.Select(pair => $"{pair.Key} {pair.Value}"));
-                builder.Append("\n);\n");
-            }
-
-            return builder.ToString();
-        }
-
-        private static string GenerateCreateInsertsStatement(SqLiteMapperInput input)
-        {
-            var builder = new StringBuilder();
-            var sortedDict = input.data.ToImmutableSortedDictionary(StringComparer.InvariantCultureIgnoreCase);
-            foreach (var (tableName, valueList) in sortedDict) {
-                var typeDict = GetSqLiteTypeDict(valueList);
-                builder.Append($"INSERT INTO {tableName} ({String.Join(", ", typeDict.Keys)})\nVALUES ");
-                builder.AppendJoin(",\n\t",
-                    valueList.Select(row => $"({String.Join(", ", row.Values.Select(ToSqliteValue))})"));
-                builder.Append(";\n\n");
-            }
-
-            return builder.ToString();
         }
 
         private static Dictionary<string, string?> GetSqLiteTypeDict(IEnumerable<Dictionary<string, object>> valueList)
