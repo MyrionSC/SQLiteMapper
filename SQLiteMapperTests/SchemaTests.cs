@@ -41,7 +41,7 @@ namespace SQLiteMapperTests
         {
             var inputStr = System.IO.File.ReadAllText(@"testfiles/schema_correct_input.json"); 
             var inputParsed = JsonConvert.DeserializeObject<SqLiteMapperInput>(inputStr);
-            var result = SqLiteMapper.GenerateTableAndInsertStatements(inputParsed);
+            var result = SqLiteMapper.ExecuteQuery(inputParsed);
             var expected = @"[{""name"": ""Martin"", ""age"": null}]";
             TestHelper.AssertEqualNoWhitepace(expected, result);
         }
@@ -52,7 +52,7 @@ namespace SQLiteMapperTests
             var inputStr = System.IO.File.ReadAllText(@"testfiles/schema_empty_data_input.json"); 
             var inputParsed = JsonConvert.DeserializeObject<SqLiteMapperInput>(inputStr);
             var result = SqLiteMapper.GenerateTableAndInsertStatements(inputParsed);
-            var expected = System.IO.File.ReadAllText(@"testfiles/users_output.sql");
+            var expected = System.IO.File.ReadAllText(@"testfiles/schema_empty_data_output.sql");
             TestHelper.AssertEqualNoWhitepace(expected, result);
         }
         

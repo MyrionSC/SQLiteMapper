@@ -15,47 +15,51 @@ namespace SQLiteMapper
         public static string GenerateTableAndInsertStatements(SqLiteMapperInput input)
         {
             ValidateSchemaIfPresent(input);
-            
+
             var tableBuilder = new StringBuilder();
             var insertBuilder = new StringBuilder();
             var sortedDict = input.data.ToImmutableSortedDictionary(StringComparer.InvariantCultureIgnoreCase);
-            
+
             foreach (var (tableName, valueList) in sortedDict) {
                 var schema = input.schemas?[tableName];
                 var typeDict = GetSqLiteTypeDict(valueList, schema);
-                
+
                 tableBuilder.Append($"CREATE TABLE {tableName}\n(\n\t");
                 tableBuilder.AppendJoin(",\n\t", typeDict.Select(pair => $"{pair.Key} {pair.Value}"));
                 tableBuilder.Append("\n);\n");
-                
-                insertBuilder.Append($"INSERT INTO {tableName} ({String.Join(", ", typeDict.Keys)})\nVALUES ");
-                insertBuilder.AppendJoin(",\n\t",
-                    valueList.Select(row => $"({String.Join(", ", row.Values.Select(ToSqliteValue))})"));
-                insertBuilder.Append(";\n\n");
+
+                if (valueList.Any()) {
+                    insertBuilder.Append($"INSERT INTO {tableName} ({String.Join(", ", typeDict.Keys)})\nVALUES ");
+                    insertBuilder.AppendJoin(",\n\t",
+                        valueList.Select(row => $"({String.Join(", ", row.Values.Select(ToSqliteValue))})"));
+                    insertBuilder.Append(";\n\n");
+                }
             }
-            
+
             return tableBuilder + insertBuilder.ToString();
         }
 
         private static void ValidateSchemaIfPresent(SqLiteMapperInput input)
         {
             if (input.schemas is null) return;
-            
+
             // validate that schemas values are valid sqlite types
             var validTypeList = new[] { "TEXT", "INTEGER", "REAL", "BLOB" };
             foreach (var schema in input.schemas) {
                 if (schema.Value is null) throw new ArgumentNullException(nameof(schema));
                 foreach (var schemaKeyValue in schema.Value) {
                     if (!validTypeList.Contains(schemaKeyValue.Value)) {
-                        throw new SchemaBadValueException($"declared value in schema keyvalue pair ({schemaKeyValue.Key}, {schemaKeyValue.Value}) is not valid sqlite type (which are: {JsonConvert.SerializeObject(validTypeList)})");
+                        throw new SchemaBadValueException(
+                            $"declared value in schema keyvalue pair ({schemaKeyValue.Key}, {schemaKeyValue.Value}) is not valid sqlite type (which are: {JsonConvert.SerializeObject(validTypeList)})");
                     }
                 }
             }
-            
+
             // validate that schema keys correspond to data
             foreach (var key in input.schemas.Keys) {
                 if (!input.data.ContainsKey(key)) {
-                    throw new SchemaNoCorrespondingDataException($"schema key {key} does not have a corresponding data key");
+                    throw new SchemaNoCorrespondingDataException(
+                        $"schema key {key} does not have a corresponding data key");
                 }
             }
         }
@@ -63,9 +67,9 @@ namespace SQLiteMapper
         private static Dictionary<string, string?> GetSqLiteTypeDict(IEnumerable<Dictionary<string, object>> valueList,
             Dictionary<string, string>? dictionary)
         {
-            var typeDict = dictionary is null ? 
-                new Dictionary<string, string?>() :
-                new Dictionary<string, string?>(dictionary!);
+            var typeDict = dictionary is null
+                ? new Dictionary<string, string?>()
+                : new Dictionary<string, string?>(dictionary!);
             foreach (var row in valueList) {
                 foreach (var (key, value) in row) {
                     if (!typeDict.ContainsKey(key) || typeDict[key] is null) {
