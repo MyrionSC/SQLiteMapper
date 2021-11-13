@@ -21,7 +21,8 @@ namespace SQLiteMapper
             var sortedDict = input.data.ToImmutableSortedDictionary(StringComparer.InvariantCultureIgnoreCase);
             
             foreach (var (tableName, valueList) in sortedDict) {
-                var typeDict = GetSqLiteTypeDict(valueList);
+                var schema = input.schemas?[tableName];
+                var typeDict = GetSqLiteTypeDict(valueList, schema);
                 
                 tableBuilder.Append($"CREATE TABLE {tableName}\n(\n\t");
                 tableBuilder.AppendJoin(",\n\t", typeDict.Select(pair => $"{pair.Key} {pair.Value}"));
@@ -59,9 +60,12 @@ namespace SQLiteMapper
             }
         }
 
-        private static Dictionary<string, string?> GetSqLiteTypeDict(IEnumerable<Dictionary<string, object>> valueList)
+        private static Dictionary<string, string?> GetSqLiteTypeDict(IEnumerable<Dictionary<string, object>> valueList,
+            Dictionary<string, string>? dictionary)
         {
-            var typeDict = new Dictionary<string, string?>();
+            var typeDict = dictionary is null ? 
+                new Dictionary<string, string?>() :
+                new Dictionary<string, string?>(dictionary!);
             foreach (var row in valueList) {
                 foreach (var (key, value) in row) {
                     if (!typeDict.ContainsKey(key) || typeDict[key] is null) {
