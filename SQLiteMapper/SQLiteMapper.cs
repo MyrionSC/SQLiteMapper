@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,7 @@ namespace SQLiteMapper
         /// <returns></returns>
         public static string GenerateTableAndInsertStatements(SqLiteMapperInput input)
         {
+            RemoveInvalidCharsInPropNames(input);
             ValidationHelper.ValidateSchemaIfPresent(input);
 
             var tableBuilder = new StringBuilder();
@@ -42,6 +44,24 @@ namespace SQLiteMapper
             return tableBuilder + insertBuilder.ToString();
         }
 
+        /// <summary>
+        /// Removes invalid chars from sqlite table property names, such as '@'
+        /// This method makes changes to input
+        /// </summary>
+        /// <param name="input"></param>
+        private static void RemoveInvalidCharsInPropNames(SqLiteMapperInput input)
+        {
+            foreach (var table in input.data) {
+                foreach (Dictionary<string, object> objDict in table.Value) {
+                    var keysWithInvalidChars = objDict.Keys.Where(k => k.Contains("@")).ToImmutableArray();
+                    foreach (string invalidKey in keysWithInvalidChars) {
+                        objDict[invalidKey.Replace("@", "")] = objDict[invalidKey];
+                        objDict.Remove(invalidKey);
+                    }
+                }
+            }
+        }
+
 
         /// <summary>
         /// Executes sqlite query in on data
@@ -63,8 +83,8 @@ namespace SQLiteMapper
                 }
 
                 // By the power of Dapper, execute the query!
-                var la = connection.Query(input.query);
-                return JsonConvert.SerializeObject(la);
+                var queryResult = connection.Query(input.query);
+                return JsonConvert.SerializeObject(queryResult);
             }
         }
     }

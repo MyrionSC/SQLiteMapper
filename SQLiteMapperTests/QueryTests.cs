@@ -36,5 +36,15 @@ namespace SQLiteMapperTests
             var expected = @"[{""name"":""Casper"",""worksForCompany"":""Commentor""},{""name"":""Martin"",""worksForCompany"":""Commentor""}]";
             TestHelper.AssertEqualNoWhitepace(expected, result);
         }
+        
+        [Test]
+        public void RemoveSymbols()
+        {
+            var inputStr = System.IO.File.ReadAllText(@"testfiles/remove_symbols_input.json"); 
+            var inputParsed = JsonConvert.DeserializeObject<SqLiteMapperInput>(inputStr);
+            var result = SqLiteMapper.ExecuteQuery(inputParsed);
+            var expected = @"[{""etag"":""@123@"", ""name"": ""Martin"", ""age"": 42}]";
+            TestHelper.AssertEqualNoWhitepace(expected, result);
+        }
     }
 }

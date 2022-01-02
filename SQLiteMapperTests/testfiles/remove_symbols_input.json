@@ -1,0 +1,9 @@
+{
+  "data": {
+    "symboldata": [
+      { "@etag": "@123@", "name": "Martin", "age": 42},
+      { "@etag": "@456@", "name": "Casper", "age": 2}
+    ]
+  },
+  "query": "select etag, name, age from symboldata where name = 'Martin'"
+}
