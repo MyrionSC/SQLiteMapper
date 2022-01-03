@@ -1,0 +1,15 @@
+{
+  "data": {
+    "AccountCodeMapping": [
+      {
+        "@odata.etag": "W/\"datetime'2021-12-15T15%3A55%3A13.9148147Z'\"",
+        "PartitionKey": "CodeMapping",
+        "RowKey": "88301",
+        "Timestamp": "2021-12-15T15:55:13.9148147Z",
+        "BcAccountNo": "40630",
+        "LessorNav17AccountNo": "88301"
+      }
+    ]
+  },
+  "query": "select odata_etag from AccountCodeMapping"
+}

@@ -19,6 +19,7 @@ namespace SQLiteMapper
         public static string GenerateTableAndInsertStatements(SqLiteMapperInput input)
         {
             RemoveInvalidCharsInPropNames(input);
+            EscapeSingleQuotesInContent(input);
             ValidationHelper.ValidateSchemaIfPresent(input);
 
             var tableBuilder = new StringBuilder();
@@ -42,6 +43,20 @@ namespace SQLiteMapper
             }
 
             return tableBuilder + insertBuilder.ToString();
+        }
+
+        private static void EscapeSingleQuotesInContent(SqLiteMapperInput input)
+        {
+            foreach (var table in input.data) {
+                foreach (Dictionary<string, object> objDict in table.Value) {
+                    foreach (var pair in objDict) {
+                        if (pair.Value is string s)
+                        {
+                            objDict[pair.Key] = s.Replace("'", "''"); // escape single quote in sqlite
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>

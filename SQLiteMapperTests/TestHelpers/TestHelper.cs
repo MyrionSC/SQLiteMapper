@@ -1,9 +1,8 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
-namespace business_layer_test
+namespace SQLiteMapperTests.TestHelpers
 {
-    public static partial class TestHelper
+    public static class TestHelper
     {
         public static void AssertEqualNoWhitepace(string expected, string actual)
         {

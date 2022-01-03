@@ -1,7 +1,7 @@
-using business_layer_test;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SQLiteMapper;
+using SQLiteMapperTests.TestHelpers;
 
 namespace SQLiteMapperTests
 {

@@ -1,7 +1,7 @@
-using business_layer_test;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SQLiteMapper;
+using SQLiteMapperTests.TestHelpers;
 
 namespace SQLiteMapperTests
 {
@@ -44,6 +44,16 @@ namespace SQLiteMapperTests
             var inputParsed = JsonConvert.DeserializeObject<SqLiteMapperInput>(inputStr);
             var result = SqLiteMapper.ExecuteQuery(inputParsed);
             var expected = @"[{""odata_etag"":""@123@"", ""name"": ""Martin"", ""age"": 42}]";
+            TestHelper.AssertEqualNoWhitepace(expected, result);
+        }
+        
+        [Test]
+        public void SingleQuoteInContentEscape()
+        {
+            var inputStr = System.IO.File.ReadAllText(@"testfiles/single_quote_in_content_escape_input.json");
+            var inputParsed = JsonConvert.DeserializeObject<SqLiteMapperInput>(inputStr);
+            var result = SqLiteMapper.ExecuteQuery(inputParsed);
+            var expected = "[{\"odata_etag\": \"W/\\\"datetime'2021-12-15T15%3A55%3A13.9148147Z'\\\"\"}]";
             TestHelper.AssertEqualNoWhitepace(expected, result);
         }
     }

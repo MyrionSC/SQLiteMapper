@@ -1,9 +1,6 @@
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Azure.Functions.Worker.Configuration;
 
-namespace funcnew
+namespace Functions
 {
     public class Program
     {
