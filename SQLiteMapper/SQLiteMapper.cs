@@ -45,7 +45,7 @@ namespace SQLiteMapper
         }
 
         /// <summary>
-        /// Removes invalid chars from sqlite table property names, such as '@'
+        /// Removes / replaces invalid chars from sqlite table property names, such as '@' or '.'
         /// This method makes changes to input
         /// </summary>
         /// <param name="input"></param>
@@ -53,9 +53,9 @@ namespace SQLiteMapper
         {
             foreach (var table in input.data) {
                 foreach (Dictionary<string, object> objDict in table.Value) {
-                    var keysWithInvalidChars = objDict.Keys.Where(k => k.Contains("@")).ToImmutableArray();
+                    var keysWithInvalidChars = objDict.Keys.Where(k => k.Contains("@") || k.Contains(".")).ToImmutableArray();
                     foreach (string invalidKey in keysWithInvalidChars) {
-                        objDict[invalidKey.Replace("@", "")] = objDict[invalidKey];
+                        objDict[invalidKey.Replace("@", "").Replace(".", "_")] = objDict[invalidKey];
                         objDict.Remove(invalidKey);
                     }
                 }
