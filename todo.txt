@@ -1,20 +1,4 @@
 Do performance testing
 - try with very big datasets
 
-throw in azure function
-
 test with real
-
-test with all nulls for one type
-
-handle all nulls
-
-optimize in generate
-
-test with multiple tables and join
-
-test datehandling
-
-test booleans
-
-add errorhandling
