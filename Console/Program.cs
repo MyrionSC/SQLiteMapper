@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using CommandLine;
 using Newtonsoft.Json;
 using SQLiteMapper;
 
@@ -8,12 +7,6 @@ namespace Console
 {
     class Program
     {
-        public class Options
-        {
-            [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
-            public bool Verbose { get; set; }
-        }
-
         static void Main(string[] args)
         {
             if (args.Length == 0) {
@@ -49,8 +42,9 @@ namespace Console
 Specify one or more json files for which (hopefully) corresponding sqlite create and insert statements will be produced.
 Bottom level element must be array of objects.
 The name of table created will be lowered file name (eg. Person.json -> person).
-Output will be written to stdout. Recommend piping to sql file (eg Person-insert.sql)
-After this, create a sqlite database with sqlite3 cli like so: sqlite3 somename.db < Person-insert.sql
+Output will be written to stdout. Could pipe to sql file (eg sqlitemapper.exe person.json > Person-insert.sql).
+After this, create a sqlite database with sqlite3 cli (eg. sqlite3 somename.db < Person-insert.sql) and open it in some 
+database explorer (which could be sqlite3 itself: sqlite3 somename.db).
                 ";
         }
     }

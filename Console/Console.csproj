@@ -6,10 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.9.0-preview1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SQLiteMapper\SQLiteMapper.csproj" />
   </ItemGroup>
 

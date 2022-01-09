@@ -35,7 +35,7 @@ namespace SQLiteMapper
                 tableBuilder.Append("\n);\n");
 
                 if (valueList.Any()) {
-                    insertBuilder.Append($"INSERT INTO {tableName} ({String.Join(", ", typeDict.Keys)})\nVALUES ");
+                    insertBuilder.Append($"INSERT INTO\n\t {tableName} ({String.Join(", ", typeDict.Keys)})\nVALUES\n\t");
                     insertBuilder.AppendJoin(",\n\t",
                         valueList.Select(row => $"({String.Join(", ", row.Values.Select(Utils.ToSqliteValue))})"));
                     insertBuilder.Append(";\n\n");
