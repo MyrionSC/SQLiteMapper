@@ -18,6 +18,7 @@ namespace SQLiteMapper
         /// <returns></returns>
         public static string GenerateTableAndInsertStatements(SqLiteMapperInput input)
         {
+            ValidationHelper.ValidateNoEmptyDataWithoutSchema(input);
             RemoveInvalidCharsInPropNames(input);
             EscapeSingleQuotesInContent(input);
             ValidationHelper.ValidateSchemaIfPresent(input);

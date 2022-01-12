@@ -55,7 +55,5 @@ namespace SQLiteMapperTests
             var expected = System.IO.File.ReadAllText(@"testfiles/schema_empty_data_output.sql");
             TestHelper.AssertEqualNoWhitepace(expected, result);
         }
-        
-        
     }
 }
