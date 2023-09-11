@@ -1,0 +1,20 @@
+[
+  {
+    "userId": "xxxxx",
+    "groups": [
+      "yyyy"
+    ],
+    "userData": {
+      "id": "xxxx",
+      "givenName": null,
+      "surname": null,
+      "fullName": " ",
+      "mail": "mail@test.dk",
+      "preferredLanguage": "da",
+      "appRole": "App.Viewer",
+      "externalUserState": "Accepted",
+      "apiUser": "",
+      "newsletterSubscriber": false
+    }
+  }
+]
